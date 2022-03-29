@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/normalize.css">
+        <script src="https://kit.fontawesome.com/7185100920.js" crossorigin="anonymous"></script>
+    </head>
+      <body>
+
+        <h1>Convolutional Neural Network: Dog Breed Classifier</h1>
+
+        <div id="toc_container"> 
+          <p class="toc_title">Contents</p>
+          <ul class="toc_list">
+            <li><a href="#introduction">Introduction</a></li>
+            <li>
+              <a href="#section1">Section 1: Dataset Cleanup</a>
+            </li>
+            <li>
+              <a href="section2">Section 2: ResNet-18</a>
+              <ul>
+                <li><a href="#section2-1">Loading in the dataset</a></li>
+                <li><a href="#section2-2">Extracting labels</a></li>
+                <li><a href="#section2-3">Data augmentation</a></li>
+                <li><a href="#section2-4">Creating the model</a></li>
+                <li><a href="#section2-5">Training and results</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#section3">Section 3: ResNet-50, More Power!</a>
+              <ul>
+                <li><a href="#section3-1">Training and results</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#section4">Section 4: ResNet-50 Bottleneck Features</a>
+              <ul>
+                <li><a href="#section4-1">Regular model</a></li>
+                <li><a href="#section4-2">Bottleneck model</a></li>
+                <li><a href="#section4-3">Extracting labels</a></li>
+                <li><a href="#section4-4">Extrating bottleneck features</a></li>
+                <li><a href="#section4-5">Compiling the end/top the of model</a></li>
+                <li><a href="#section4-6">Training</a></li>
+                <li><a href="#section4-7">Results</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#section5">Section 5: A Cocktail of Concatenated Convolutional Neural Networks (CCCNN)</a>
+              <ul>
+                <li><a href="#section5-1">Extracting bottleneck features</a></li>
+                <li><a href="#section5-2">Creating branches</a></li>
+                <li><a href="#section5-3">Concatentating outputs and compiling the model</a></li>
+                <li><a href="#section5-4">Training and results</a></li>
+                <li><a href="#section5-5">Reconstructing</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#section6">Section 6: Jessie and Friends</a>
+              <ul>
+                <li><a href="#section6-1">Jessie</a></li>
+                <li><a href="#section6-2">Butter</a></li>
+                <li><a href="#section6-3">Merry</a></li>
+                <li><a href="#section6-4">Nala</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#conclusion">Conclusion</a>
+            </li>
+
+          </ul>
+        </div>
+        
+        <h2 id="introduction">Introduction</h2>
+        <p>For this project, I set out to create a dog breed classifier (133 breeds) with an accuracy at or above 90% using Python. Throughout
+        this project, I explored various models and model structures, beginning with ResNet-18 and ending with a cocktail of concatenated convolutional neural networks (CCCNN). The initial exploratory stages (sections 1-3) were imperative for my personal growth, although, less interesting. So I’ve condensed the first three sections to quickly jump to section 4. Please, stick around until my favorite section, “Jessie and Friends.”</p>
+
+        <p>Check out the full GitHub repository <a href="https://github.com/parkshub/neural-network-dog-breed-classifier">here</a>.</p>
+
+        <p>A special thanks to Udacity for providing the dataset. The dataset can be found <a href="https://github.com/udacity/dog-project">here</a></p>
+        
+        
+        <h2 id="section1">Section 1: Dataset Cleanup</h2>
+        <p>Some of the images were either corrupted or not in the standard .jpeg/.png format. In this section we’ll be deleting
+        those files from our dataset.</p>
+        <script src="https://gist.github.com/parkshub/25ec5fb326739385c8cf8ba8e952062a.js"></script>
+
+
+        <h2 id="section2">Section 2: ResNet-18</h2>
+        <p>There are a few variations of ResNet, but all of them utilize what's called a "skip connection." In theory, deeper networks should outperform shallower networks, however, in practice, deeper networks suffer from "vanishing gradients," resulting in poorer results. Even if a neural network were to arrive at the theoretical global minium at layer 50 (e.g. out of a 100 layers), it would have trouble maintaining those weights due to the difficulty of learning the identity function. By using skip connections, the neural network is able to better maintain its optimal weights without the identity function. In short, skip connections enable deep neural networks to perform as intended.</p>
+
+        <p>In this section, we'll be building ResNet-18 from scratch using the architecture in figure 1.</p>
+        
+        <section class="imgContainer">
+          <h4>Figure 1</h4>
+          <img src="img/Original-ResNet-18-Architecture.png" alt="">
+        </section>
+
+
+        <h3 id="section2-1">Loading in the dataset</h3>
+        <p>"image_dataset_from_directory" is a convenient way of loading in your dataset. It loads and labels the dataset 
+          depending on its parent directory.</p>
+        <script src="https://gist.github.com/parkshub/4616f764870a2eaab64ef110f849838f.js"></script>
+        
+        <h3 id="section2-2">Extracting labels</h3>
+        <p>Here, we'll extract the labels.</p>
+        <script src="https://gist.github.com/parkshub/e9d5ae7ad6a623ff08cfb29664ef1276.js"></script>
+
+        <p>makes the script below scrollable</p>
+        <script class='scroll output' src="https://gist.github.com/parkshub/ddcd990b295fb5c66f0828f6681ecdb5.js"></script>
+
+        <p>Let's take a look at some of the good doges.</p>
+        <script src="https://gist.github.com/parkshub/94dd92c2c9e302ef3ada7fc911ab0f59.js"></script>
+
+        <section class="imgContainer">
+          <h4>Figure 2</h4>
+          <img class='figure' src="img/good_doges.png" alt="">
+        </section>
+
+        
+        <h3 id="section2-3">Data augmentation</h3>
+        <p>Data augmentation allows us to "create" more datasets by randomly augmenting the images. Here we'll be making a 
+          sequential layer that randomly rotates and flips the images. This layer will be embedded into the beginning of the 
+          model.</p>
+        <script src="https://gist.github.com/parkshub/710231330331c1701d206405eb7a9e36.js"></script>
+        <p>Let's take a look at what this function does.</p>
+        <script src="https://gist.github.com/parkshub/4d94d83c85153231f53fa566383d3918.js"></script>
+        
+        <section class="imgContainer">
+          <h4>Figure 3</h4>
+          <img class='figure' src="img/augmented_images.png" alt="">
+        </section>
+        <h3 id="section2-4">Creating the model</h3>
+        <script src="https://gist.github.com/parkshub/37a9b076e5f47d2c28f902f2bec8622f.js"></script>
+        <p>I had initially set the dropout rate to 0.2, but to adjust for the high variance, I set the dropout rate to 0.5.
+          With this change, there was a significant improvement in variance and a slight improvement in accuracy. Let's take a look at what I'm talking about, but with graphs!</p>
+
+        <h3 id="section2-5">Training and results</h3>
+        <script src="https://gist.github.com/parkshub/f3ef84726a074b3894e27cdaacfc053e.js"></script>
+        <script src="https://gist.github.com/parkshub/908ecc7d8588c22d5073cb61e36f7785.js"></script>
+        
+        <section class="imgContainer">
+          <h4>Figure 4</h4>
+          <img class='figure' src="img/resnet18.png" alt="">
+        </section>
+        <p>As you can see from figure 4, by increasing the dropout rate, variance significantly decreased with a slight improvement in accuracy. Admittedly, the overall accuracy isn't very impressive, but I wasn't expecting drastic results from ResNet-18, as there are 133 classes. This section was more of a proof of concept and less about results. That isn't to say that ResNet-18 is a bad model. It's a great model for classification problems with less classes. Now, let's move onto something more suitable for this problem, ResNet-50!</p>
+
+
+        <h2 id="section3">Section 3: ResNet-50, More Power!</h2>
+        <script src="https://gist.github.com/parkshub/e556ab7afeac109f7e45637f62789ada.js"></script>
+        <p>In this section, we'll be building ResNet-50 using transfer learning, adding a few more tunable hyperparameters, and exploring models with varying depths.</p>
+        <script src="https://gist.github.com/parkshub/b4727ba3130e9638813d62ddbb2f3e74.js"></script>
+        <p>The first, basic model has three added dense layers (512, 256, 256) and the deeper model has four added dense layers with 512 nodes each. Similar to the function above, we're able to tune the dropout rate with "drop." However, this time, data augmentation is no longer an argument and is a permanent part of the function. Three additional arguments are "tune_at," "tuning" and "reg." With the argument "tune_at" we can choose which layer to tune from if "tuning" is set to true. With the argument "reg," we can adjust the lambda of L2 regularization in the dense layers. Let's get to training!</p>
+
+        <h3 id="section3-1">Training and results</h3>
+        <p>I had spent a tremendous amount of time attempting to tune ResNet-50. For brevity, I'll display the results of the 3 best models: 
+        <ol>
+          <li>resnet50_func_basic: [without] tuning and regularization and [with] a dropout rate of 0.3</li>
+          <li>resnet50_func_basic: [without] regularization and [with] a dropout rate of 0.3 and tuning</li>
+          <li>deeper_resnet50_func: [without] regularization and [with] a dropout rate of 0.3, lowered learning rate, tuning</li>
+        </ol></p>
+        <script src="https://gist.github.com/parkshub/e5117567ef49edf526998c3b6dfed179.js"></script>
+        
+        <section class="imgContainer">
+          <h4>Figure 5</h4>
+          <img class='figure' src="img/resnet50.png" alt="">
+        </section>
+        <p>The results definitely were a huge improvement from ResNet-18, however, due to the time it took to run a 100 epochs, 
+          it made fine-tuning impractical. In search for a better solution, I discovered bottleneck features 
+          and tf.keras.layers.Concatenate(). Prepare for magic.</p>
+        
+
+        <h2 id="section4">Section 4: ResNet-50 Bottleneck Features</h2>
+        <p>Before delving into the cocktail of concatenated convolutional neural networks (CCCNN), let's first explore the power of utilizing bottleneck features, separately. Extracting and using bottleneck features is an incredibly efficient way to train your neural network.</p>
+        
+        <h3 id="section4-1">Regular model</h3>
+
+        <section class="imgContainer">
+          <h4>Figure 6</h4>
+          <img src="img/without_bottleneck.drawio.png" alt="">
+        </section>
+        <p>Let's consider a scenario where we've imported ResNet-50 but have replaced its last fully-connected layer with our own. Let's also say we're only interested in training our added layer and have frozen the other layers. During training, the aforementioned model (figure 6) would pass the inputs through all the layers (forward propagation), compute the gradient only for the last added layer (backpropagation) and update the last layer's weights. Since we're only updating the last added layer, the layers before will alway produce the same outcome. In other words, the model is repeatedly making the same computations and passing the same values to the added layer. Mind you, ResNet-50 has a total of 23,587, 712 parameters without it's last fully-connected layer. That's a lot of unneccesary computations. Let's see how we can streamline this process using bottleneck features.</p>
+          
+        <h3 id="section4-2">Bottleneck model</h3>
+        <section class="imgContainer">
+          <h4>Figure 7</h4>
+          <img src="img/bottleneck.drawio.png" alt="">
+        </section>
+        <p>Since we already know the values being passed to our added layer, we can extract their values ahead of time by passing our inputs through ResNet-50 without its last full-connected layer. We can then use these features as our new input, essentially, bypassing all of ResNet-50's layers. Now, let's see how it performed.</p>
+
+        <h3 id="section4-3">Extracting labels</h3>
+        <script src="https://gist.github.com/parkshub/1111e2b268c6ef8cd5458e0368ac3655.js"></script>
+        <p>Here, I've opted to use OrdinalEncoder instead of OneHotEncoder to save memory. If we had around 8000 observations/instances OneHotEncoder would create an 8000(# of observations/instance) x 133 (# classes) array, while OrdinalEncoder only creates an 8000 x 1 array.</p>
+
+        <h3 id="section4-4">Extracting bottleneck features</h3>
+        <script src="https://gist.github.com/parkshub/ead4ed23ed99cef77f72be6f6865a024.js"></script>
+        <p>Random state was set to 42 to keep the other bottleneck features' observation/incidents in the same order.
+        </p>
+
+        <h3 id="section4-5">Compiling the end/top the of model</h3>
+        <p>Here, we're compiling a model that accepts inputs that are the same shape as "resnet50_features" (bottleneck features). Refering back to figure 7, the function "model_top" is adding the "added layer."</p>
+        <script src="https://gist.github.com/parkshub/9b84207bceb79149c94e8db29ed32b66.js"></script>
+
+        <h3 id="section4-6">Training</h3>
+        <p>You may have noticed that we didn't implement callback functions up until this point. For some reason, callbacks weren't working, but worry not! They're back and working. In this section we'll be making a function ( "callbacks_funcv2") to return the callbacks we want use—ModelCheckpoint, EarlyStopping, CSVLogger—and implement them in our training. For more information on callbacks, please refer to <a href="https://keras.io/api/callbacks/">https://keras.io/api/callbacks/</a>. Now, let's get to training</p>
+        <script src="https://gist.github.com/parkshub/11a820992477c38cd30fe0fdda2fcb3e.js"></script>
+
+        <h3 id="section4-7">Results</h3>
+        <script src="https://gist.github.com/parkshub/1c63990c084cafb756bd262a2fed6933.js"></script>
+        <section class="imgContainer">
+          <h4>Figure 8</h4>
+          <img src="img/resnet50_bottleneck.png" alt="">
+        </section>
+        <p>I was humbled after seeing these results. Before, every epoch took over an hour. With bottleneck features, 
+          50 epochs took less than 2 minutes. Furthermore, it acheived 80% accuracy within 14 epochs (~36 seconds). This was 
+          far better than any efforts made by me in a span of <span id="redacted">[redacted]</span> weeks. I would be lying if I said I wasn't embarrased 
+          or dismayed, however, I was equally amazed and hopeful in being able to reach 90% accuracy. Let's see what we can do 
+          with this new found knowledge.</p>
+
+        
+        <h2 id="section5">Section 5: A Cocktail of Concatenated Convolutional Neural Networks (CCCNN)</h2>
+        <p>In this section, we'll concoct a cocktail of concatenated convolution neural networks. Using the approach in section 4, we'll extract the bottleneck features of four neural networks and concat them into one dense layer. Then we'll add another dense layer just before the output layer. We'll be extracting the bottleneck features of the four, best-performing, midsized, neural networks: ResNet-152V2, Xception, Inception-ResNetV2, and EfficientNet-B7.</p>
+        <p class="sideNote">*as much as I would've liked to have used larger networks, due to memory constraints, I limited my choices to 
+          midsized networks</p>
+
+        <h3 id="section5-1">Extracting bottleneck features</h3>
+        <script src="https://gist.github.com/parkshub/964bd62b89e0db2a0f22e7b5c58dac21.js"></script>
+
+        <h3 id="section5-2">Creating branches</h3>
+        <script src="https://gist.github.com/parkshub/95fbb401018d1d6b729aa6254a7e6c5b.js"></script>
+
+        <h3 id="section5-3">Concatentating outputs and compiling the model</h3>
+        <script src="https://gist.github.com/parkshub/3205ef2caff87a3b3966e4b8489b3452.js"></script>
+        <p>Here's a visual representation of what's going on.</p>
+        <section class="imgContainer">
+          <h4>Figure 9</h4>
+          <img src="img/concat_model.drawio.png" alt="">
+        </section>
+
+        <h3 id="section5-4">Training and results</h3>
+        <script src="https://gist.github.com/parkshub/76f5e11296bb8290746bf9412e5da365.js"></script>
+        <p>Let's take a look at the four best models. The four models being displayed below have been tuned by adjusting the "drop" and "reg" arguments in the functions "branch" and "concat_model_top."</p>
+        <script src="https://gist.github.com/parkshub/c11a89672c8d0db620d1041b6cce5f5e.js"></script>
+        <section class="imgContainer">
+          <h4>Figure 10</h4>
+          <img src="img/concat_graph.png" alt="">
+        </section>
+        
+
+        <p>Stunning! After much training, I was able to get an accuracy of 89%. Although it's a percentage point less than 90%, 
+          I was satisfied with the results. Now, let's test our model on real world examples! We'll be using the 
+          second model with a dropout rate of 0.7, as it performed the best.</p>
+          
+        <p>Before applying our model, we have some cleaning up to do. As of now, our model takes in four different bottleneck features as inputs, but we need it to take in one 200 by 200 by 3 image input. In order to do this, we need to reconstruct our model.</p>
+        
+
+        <h3 id="section5-5">Reconstructing</h3>
+        <script src="https://gist.github.com/parkshub/7f9fb71b7d083fee21609b2deb841909.js"></script>
+        <script class='output' src="https://gist.github.com/parkshub/48a9f49e51a15bd9f0d460ecfd311aa5.js"></script>
+        <p>Now, that we have our complete model, let's get to applying!</p>
+
+
+        <h2 id="section6">Section 6: Jessie and Friends</h2>
+        <p>The functions used in this section are collapsed below. <span class="bold">Also, please don't forget to give our friends below a little pet!
+You may or may not be pleasantly surprised.
+</span></p>
+        <button>show</button>
+        <section class="collapse hidden">
+          <script src="https://gist.github.com/parkshub/d9c5279e33665635a57c76ed1b44db59.js"></script>
+          <script src="https://gist.github.com/parkshub/a6404d5f33b3947eb21d4ed9154b6b78.js"></script>
+        </section>
+        
+
+        <section id='heartContainer' class="hideHearts">
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+          <i class="fa-solid fa-heart heart"></i>
+        </section>
+
+        <section class="friendContainer border jessieHeart">
+          <h3 id="section6-1" class="friends">Jessie</h3>
+          <img id='Jessie' class='friendImg' src="img/jessie.jpg" alt="" width="400" height="500">
+
+        <p class="friendDesc">This is Jessie. She's a Miniature Schnauzer. We adopted her from the rescue center at the age of 3 to 4. Now, 
+          she's around 8 to 9 years young, and still gets mistaken as puppy! She's a very playful, yet gentle dog and she 
+          knows many, many tricks. Her favorite pastimes are sniffing around the house, playing fetch, and asking for 
+          scritches. Now, let's test our model on four different pictures of Jessie.</p>
+        </section>
+        <script src="https://gist.github.com/parkshub/3c3d76c46a2676d2214da559ce6f8e04.js"></script>
+        
+        <div class="scrollContainer">
+          <div class="scroll">
+            <div class="insideImg">
+              <h4>Figure 12</h4>
+              <img src="img/jessie2.png" alt="" width="900" height="750">
+            </div>
+            <div class="insideImg">
+              <h4>Figure 13</h4>
+              <img src="img/jessie3.png" alt=""width="900" height="750">
+            </div>
+            <div class="insideImg">
+              <h4>Figure 14</h4>
+              <img src="img/jessie1.png" alt="" width="900" height="750">
+            </div>
+            <div class="insideImg">
+              <h4>Figure 15</h4>
+              <img src="img/jessie4.png" alt="" width="900" height="750">
+            </div>
+          </div>
+        </div>
+        
+        <section class="friendContainer border butterHeart">
+          <h3 id="section6-2" class="friends">Butter</h3>
+          <h4>Figure 16</h4>
+          <img id='Butter' class='friendImg' src="img/butter.jpg" alt="" width="400" height="500">
+        
+
+          <P class="friendDesc">This is Butter. He's a 4 year old Welsh Corgi. He likes to bark at motorcycles and doesn't like Shibas.
+            Now, let's test our model on three different pictures of Butter.</P>
+        </section>
+        <script src="https://gist.github.com/parkshub/258f573fc173e85790e7e1526ebfa6ac.js"></script>
+
+
+        <div class="scrollContainer">
+          <div class="scroll">
+            <div class="insideImg">
+              <h4>Figure 17</h4>
+              <img src="img/butter1.png" alt="" width="900" height="750">
+            </div>
+            <div class="insideImg">
+              <h4>Figure 18</h4>
+              <img src="img/butter2.png" alt="" width="900" height="750">
+            </div>
+            <div class="insideImg">
+              <h4>Figure 19</h4>
+              <img src="img/butter3.png" alt="" width="900" height="750">
+            </div>
+          </div>
+        </div>
+
+        <section class="friendContainer border merryHeart">
+          <h3  id="section6-3" class="friends">Merry</h3>
+          <img id='Merry' class='friendImg' src="img/merry.jpg" alt="" width="400" height="500">
+        
+          <p class="friendDesc">This is Merry, a 6 year old Minature Poodle. Her name is Merry because she was adopted on Christmas. She's a 
+            cute, sassy little lady that loves people and is afraid of the wind. Now, let's test our model on three different 
+            pictures of Merry.</p>
+        </section>
+        <script src="https://gist.github.com/parkshub/8bc4590bafb5e9a7c0082615559a2e66.js"></script>
+        
+        <div class="scrollContainer">
+          <div class="scroll">
+            <div class="insideImg">
+              <h4>Figure 20</h4>
+              <img class='merryGraph' src="img/merry1.png" alt="" width="900" height="750">
+            </div>
+            <div class="insideImg">
+              <h4>Figure 21</h4>
+              <img class='merryGraph' src="img/merry2.png" alt="" width="900" height="750">
+            </div>
+            <div class="insideImg">
+              <h4>Figure 22</h4>
+              <img class='merryGraph' src="img/merry3.png" alt="" width="900" height="750">
+            </div>
+          </div>
+        </div>
+
+
+        <p class="sideNote">*the dataset I used to train the model did not differentiate Standard Poodles from Miniature Poodles</p>
+
+        <section class="friendContainer border nalaHeart">
+          <h3 id="section6-4" class="friends">Nala</h3>
+          <img id='Nala' class='friendImg' src="img/nala.jpg" alt="" width="400" height="500">
+        
+          <p class="friendDesc">This is Nala. She's a 2 year old White German Shephard. She is named after the lioness in the movie, The Lion King. 
+            She loves to crawl underneath chairs and runs away from ear medicine. Now, let's test our model on three different 
+            pictures of Nala.</p>
+        </section>
+        <script src="https://gist.github.com/parkshub/2658ea5f7c582d5f1936655b631c0427.js"></script>
+        
+        <div class="scrollContainer">
+          <div class="scroll">
+            <div class="insideImg">
+              <h4>Figure 23</h4>
+              <img class='nalaGraph' src="img/nala1.png" alt="" width="900" height="750">
+            </div>  
+            <div class="insideImg">
+              <h4>Figure 24</h4>
+              <img class='nalaGraph' src="img/nala2.png" alt="" width="900" height="750">
+            </div>
+            <div class="insideImg">
+              <h4>Figure 25</h4>
+              <img class='nalaGraph' src="img/nala3.png" alt="" width="900" height="750">
+            </div>
+          </div>
+        </div>
+
+        
+
+        <span class="sideNote">*the dataset I used to train the model did not differentiate German Shephards from White German Shephards</span>
+
+
+        <h2 id="conclusion">Conclusion</h2>
+        <p>Overall, it was a difficult, but rewarding project. Getting to look at pictures of dogs was also a great 
+          stress-reliever. If I weren't constrained by my laptop's hardware, there are several things I would have done that 
+          would have drastically improved the accuracy of my model. For one, I could have used larger networks. I could have 
+          also used the newly released Efficient Nets. Unfortunately, they weren't available when working on this project. I 
+          could have also used larger input images. During resizing, some images were affected more than others and a 
+          significant amount of noise was added to the pictures.</p>
+        <script src="https://gist.github.com/parkshub/76b32420583d8e142e96a30620eb1720.js"></script>
+        <section class="friendContainer">
+          <h4>figure 26</h4>
+          <img src="img/comparison.png" alt="">
+        </section>
+        <p>Lastly, another idea I had while searching for a better solution was to integrate a model like You Only Look Once ( YOLO) to draw square anchor boxes around the dogs and extracting only the image inside the box. By limiting the anchor boxes to a square, we can resize the images into a standard size without skewing the proportions of a dog's features, which are probably pretty important for discerning a dog's breed. I would have loved to have pursued this idea if time permitted. Nonetheless, it's in my list of projects to complete. Be on the lookout!</p>
+        <p>If you'd like to know more about neural networks, please check out professor Andrew Ng's lectures on Youtube or Coursera. My ResNet-18 function was directly influenced by his assignments. Also, please check out the two links below. The idea to extract bottleneck features and concatenate them were inspired by a mixture of these two blog posts.</p>
+        <p>Thank you for reading! This page was generated entirely by me :) Please check out my GitHub repository to see the source code for this project as well as the source code for this page.
+        </p>
+        <br>
+        <span class="comingSoon">Web intergrated breed classifier coming very soon...</span><br>
+        <span class="comingSoon">Recurrent neural network project coming soon...</span>
+
+
+        <h2>References</h2>
+        <ul>
+          <li>Figure 1: A Deep Learning Approach for Automated Diagnosis and Multi-Class Classification of Alzheimer’s Disease Stages Using Resting-State fMRI and Residual Neural Networks - Scientific Figure on ResearchGate. Available from: https://www.researchgate.net/figure/Original-ResNet-18-Architecture_fig1_336642248 [accessed 21 Mar, 2022]</li>
+          <li>Figure 6, 7, 9: made with draw.io</li>
+          <li>Sections 4-6 were inspired by a combination of...</li>
+          <ul>
+            <li>Hossain, M. J. (2021, October 5). Dog breed: Transfer learning combining 4 backbones. Dog Breed: Transfer Learning combining 4 backbones. Retrieved March 21, 2022, from https://www.kaggle.com/code/meherajhossain/dog-breed-transfer-learning-combining-4-backbones/notebook </li>
+            <li>Kostadinov, N. (2017, July 11). Dog breed image classification with Keras. MACHINE MEMOS. Retrieved March 21, 2022, from http://machinememos.com/python/keras/artificial%20intelligence/machine%20learning/transfer%20learning/dog%20breed/neural%20networks/convolutional%20neural%20network/tensorflow/image%20classification/imagenet/2017/07/11/dog-breed-image-classification.html</li>
+          </ul>
+      </ul>
+        <script type="text/javascript" src="js/main.js"></script>
+      </body>
+</html>

@@ -1,0 +1,273 @@
+body{
+  padding: 0 15%;
+  font-family: sans-serif;
+}
+
+#toc_container a{
+  color: black;
+  text-decoration: none;
+}
+
+#toc_container a:hover{
+  /* color: gray; */
+  text-decoration: underline;
+}
+
+h1{
+  padding-bottom: 1%;
+  border-bottom: 1px solid black;
+}
+
+h3{
+  font-style: italic;
+  font-size: 17px;
+}
+
+.imgContainer, .friendContainer{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+p.friendDesc{
+  padding: 2% 20%;
+}
+
+.border{
+  /* border: 30px inset rgb(139, 139, 187); */
+  
+  border: 30px inset rgb(179, 228, 223);
+  /* border-radius: 80%; */
+  /* padding: 2%; */
+}
+
+.friends{
+  font-size: 40px;
+}
+
+.friendContainer > p{
+  /* padding: 2% 0; */
+}
+
+h4{
+  font-size: 12px;
+}
+
+ul{
+  overflow-wrap: break-word;
+}
+
+.hidden{
+  display: none;
+}
+
+script{
+  margin-bottom: 1%;
+}
+
+.friendContainer.border{
+  margin: 2% 0;
+}
+
+#redacted{
+  display: inline-block;
+  color: white;
+  background: black;
+}
+
+.sideNote{
+  font-style: italic;
+}
+
+.scrollContainer{
+  display: flex;
+  justify-content: center;
+  /* background: bisque; */
+}
+
+.scroll{
+  overflow: auto;
+  width: 950px;
+  /* height: 800px; */
+  white-space: nowrap;
+}
+
+.scroll > *{
+  display: inline-block;
+  color: black;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+  /* background: rgb(139, 139, 187); */
+}
+
+.insideImg{
+  border: 1px dotted black;
+  margin: 0 2%;
+}
+
+
+.friendImg{
+  /* cursor: grabbing; */
+  cursor: grab;
+}
+
+.comingSoon{
+  font-size: small;
+  font-style: italic;
+}
+
+.bold{
+  font-weight: bolder;
+}
+
+/* https://www.tipsandtricks-hq.com/simple-table-of-contents-toc-using-pure-html-and-css-code-9217 */
+
+#toc_container {
+  background: #f9f9f9 none repeat scroll 0 0;
+  border: 1px solid #aaa;
+  display: table;
+  font-size: 95%;
+  margin-bottom: 1em;
+  padding: 20px;
+  width: auto;
+}
+
+.toc_title {
+  font-weight: 700;
+  text-align: center;
+}
+
+#toc_container li, #toc_container ul, #toc_container ul li{
+  list-style: outside none none !important;
+}
+
+
+/* https://discourse.webflow.com/t/add-falling-confetti-with-css/103687 */
+
+/* #timer{
+  display: none;
+
+} */
+
+.hideHearts{
+  display: none;
+}
+
+.heart {
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  left: 50%;
+  animation: confetti;
+  animation-duration: 7s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  transform-origin: left top;
+  /* opacity: 1; */
+  /* animation-fill-mode: forwards; */
+  /* animation: fade 2s linear; */
+}
+
+
+.heart:nth-child(1) {
+  color: #f2d74e; left: 10%; animation-delay: 0;
+}
+.heart:nth-child(2) {
+  color: #95c3de; left: 20%; animation-delay: -5s;
+}
+.heart:nth-child(3) {
+  color: #ff9a91; left: 30%; animation-delay: -3s;
+}
+.heart:nth-child(4) {
+  color: #f2d74e; left: 40%; animation-delay: -2.5s;
+}
+.heart:nth-child(5) {
+  color: #95c3de; left: 50%; animation-delay: -4s;
+}
+.heart:nth-child(6) {
+  color: #ff9a91; left: 60%; animation-delay: -6s;
+}
+.heart:nth-child(7) {
+  color: #f2d74e; left: 70%; animation-delay: -1.5s;
+}
+.heart:nth-child(8) {
+  color: #95c3de; left: 80%; animation-delay: -2s;
+}
+.heart:nth-child(9) {
+  color: #ff9a91; left: 90%; animation-delay: -3.5s;
+}
+.heart:nth-child(10) {
+  color: #f2d74e; left: 100%; animation-delay: -2.5s;
+}
+.heart:nth-child(11) {
+  color: #95c3de; left: 65%; animation-delay: -1s;
+  }
+.heart:nth-child(12) {
+  color: #ff9a91; left: 45%; animation-delay: -3.5s;
+}
+
+
+
+
+@keyframes confetti {
+  0% { transform: rotateZ(15deg) rotateY(0deg) translate(0,0); }
+  25% { transform: rotateZ(5deg) rotateY(360deg) translate(-5vw,20vh); }
+  50% { transform: rotateZ(15deg) rotateY(720deg) translate(5vw,60vh); }
+  75% { transform: rotateZ(5deg) rotateY(1080deg) translate(-10vw,80vh); }
+  100% { transform: rotateZ(15deg) rotateY(1440deg) translate(10vw,110vh); }
+}
+
+
+
+  /* https://codersblock.com/blog/customizing-github-gists/ */
+
+/* body{
+    padding: 0 30%;
+} */
+
+  .gist{
+    margin-bottom: 2%;
+  }
+
+  body .gist .gist-file {
+    margin-bottom: 0;
+    border: none;
+    /* border-radius: 0; */
+  }
+  
+  body .gist .gist-data {
+    border-bottom: none;
+    border-radius: 0;
+    /* background-color: #f1f3f5; */
+  }
+  
+  body .gist .highlight td {
+    line-height: 1;
+    /* color: red; */
+    background: rgb(218, 247, 248);
+    /* background: rgb(181, 184, 171); */
+  }
+  
+  body .gist tr:first-child td {
+    padding-top: 10px !important;
+  }
+  
+  body .gist tr:last-child td {
+    padding-bottom: 10px !important;
+  }
+  
+  body .gist .blob-num {
+    color: black;
+    pointer-events: none;
+  }
+  
+  body #gist115305775 .blob-num {
+    display: none;
+    pointer-events: none;
+  }
+
+  body .gist .gist-meta {
+    display: none;
+  }
