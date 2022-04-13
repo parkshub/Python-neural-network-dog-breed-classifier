@@ -149,7 +149,7 @@
         <script src="https://gist.github.com/parkshub/e556ab7afeac109f7e45637f62789ada.js"></script>
         <p>In this section, we'll be building ResNet-50 using transfer learning, adding a few more tunable hyperparameters, and exploring models with varying depths.</p>
         <script src="https://gist.github.com/parkshub/b4727ba3130e9638813d62ddbb2f3e74.js"></script>
-        <p>The first, basic model has three added dense layers (512, 256, 256) and the deeper model has four added dense layers with 512 nodes each. Similar to the function above, we're able to tune the dropout rate with "drop." However, this time, data augmentation is no longer an argument and is a permanent part of the function. Three additional arguments are "tune_at," "tuning" and "reg." With the argument "tune_at" we can choose which layer to tune from if "tuning" is set to true. With the argument "reg," we can adjust the lambda of L2 regularization in the dense layers. Let's get to training!</p>
+        <p>The first, basic model has three added dense layers (512, 256, 256) and the deeper model has four added dense layers with 512 nodes each. Similar to the function above, we're able to tune the dropout rate with "drop." However, this time, data augmentation is no longer a parameter and is a permanent part of the function. Three additional parameters are "tune_at," "tuning" and "reg." With the parameter "tune_at" we can choose which layer to tune from if "tuning" is set to true. With the parameter "reg," we can adjust the lambda of L2 regularization in the dense layers. Let's get to training!</p>
 
         <h3 id="section3-1">Training and results</h3>
         <p>I had spent a tremendous amount of time attempting to tune ResNet-50. For brevity, I'll display the results of the 3 best models: 
@@ -238,7 +238,7 @@
 
         <h3 id="section5-4">Training and results</h3>
         <script src="https://gist.github.com/parkshub/76f5e11296bb8290746bf9412e5da365.js"></script>
-        <p>Let's take a look at the four best models. The four models being displayed below have been tuned by adjusting the "drop" and "reg" arguments in the functions "branch" and "concat_model_top."</p>
+        <p>Let's take a look at the four best models. The four models being displayed below have been tuned by adjusting the "drop" and "reg" parameters in the functions "branch" and "concat_model_top."</p>
         <script src="https://gist.github.com/parkshub/c11a89672c8d0db620d1041b6cce5f5e.js"></script>
         <section class="imgContainer">
           <h4>Figure 10</h4>
